@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends, HTTPException, Header
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -16,9 +17,16 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+allowed_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    os.getenv("FRONTEND_URL", ""),
+]
+allowed_origins = [origin for origin in allowed_origins if origin]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
