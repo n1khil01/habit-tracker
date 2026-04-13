@@ -10,6 +10,7 @@ import bcrypt
 import uuid
 from fastapi.middleware.cors import CORSMiddleware
 import datetime
+from auth import create_access_token, get_current_user, get_db
 
 Base.metadata.create_all(bind=engine)
 
@@ -22,25 +23,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Simple in-memory token store
-active_tokens = {}
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-def get_current_user(token: str = Header(), db: Session = Depends(get_db)):
-    user_id = active_tokens.get(token)
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
-    return user
 
 # ─── Auth Schemas ────────────────────────────────────────────────────────────
 
@@ -84,8 +66,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == data.email).first()
     if not user or not bcrypt.checkpw(data.password.encode(), user.hashed_password.encode()):
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    token = str(uuid.uuid4())
-    active_tokens[token] = user.id
+    token = create_access_token(int(user.id)) # ignore
     return {"access_token": token}
 
 @app.post("/forgot-password")
