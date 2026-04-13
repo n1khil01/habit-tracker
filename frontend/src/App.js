@@ -175,14 +175,14 @@ const toggleDate = (habitId, dateStr) => {
   });
 };
 
- // eslint-disable-next-line react-hooks/exhaustive-deps
-useEffect(() => {
+ useEffect(() => {
   const token = localStorage.getItem("token");
   if (token) {
     setView("app");
     fetchHabits();
     fetchJournal(getLocalToday());
   }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, []);
 
   const cardStyle = {
