@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -9,6 +10,7 @@ const getLocalToday = () =>
     const day = String(d.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
     };
+    const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 
 function App() {
   const [habits, setHabits] = useState([]);
@@ -31,7 +33,7 @@ function App() {
   const toClear = weekDays.filter(d => markedDays.has(d));
   Promise.all(
     toClear.map(dateStr =>
-      axios.post(`http://127.0.0.1:8000/habits/${id}/toggle-date`,
+      axios.post(`${API_URL}/habits/${id}/toggle-date`,
         { date: dateStr },
         { headers: { token } }
       )
@@ -44,7 +46,7 @@ function App() {
 
   const login = async () => {
     try {
-      const res = await axios.post("http://127.0.0.1:8000/login", { email, password });
+      const res = await axios.post(`${API_URL}/login`, { email, password });
       localStorage.setItem("token", res.data.access_token);
       setView("app");
       fetchHabits();
@@ -55,7 +57,7 @@ function App() {
 
   const register = async () => {
     try {
-      await axios.post("http://127.0.0.1:8000/register", { email, password });
+      await axios.post('${API_URL}/register', { email, password });
       alert("Account created! Please log in.");
       setView("login");
       setEmail("");
@@ -67,7 +69,7 @@ function App() {
 
   const forgotPassword = async () => {
     try {
-      await axios.post("http://127.0.0.1:8000/forgot-password", { email });
+      await axios.post(`${API_URL}/forgot-password`, { email });
       alert("If that email exists, a reset link has been sent.");
       setView("login");
       setEmail("");
@@ -78,12 +80,12 @@ function App() {
 
   const fetchHabits = () => {
   const token = localStorage.getItem("token");
-  axios.get("http://127.0.0.1:8000/habits", {
+  axios.get(`${API_URL}/habits`, {
     headers: { token }
   }).then(res => {
     setHabits(res.data);
     res.data.forEach(habit => {
-      axios.get(`http://127.0.0.1:8000/habits/${habit.id}/streak`, {
+      axios.get(`${API_URL}/habits/${habit.id}/streak`, {
         headers: { token }
       }).then(streakRes => {
         setStreaks(prev => ({ ...prev, [habit.id]: streakRes.data.streak }));
@@ -91,7 +93,7 @@ function App() {
       fetchHabitLogs(habit.id);
     });
   });
-  axios.get("http://127.0.0.1:8000/habits/today", {
+  axios.get(`${API_URL}/habits/today`, {
     headers: { token }
   }).then(res => {
     setDoneToday(new Set(res.data.done_today));
@@ -100,20 +102,20 @@ function App() {
 
   const addHabit = () => {
     if (!newHabit) return;
-    axios.post("http://127.0.0.1:8000/habits", { name: newHabit }, {
+    axios.post(`${API_URL}/habits`, { name: newHabit }, {
       headers: { token: localStorage.getItem("token") }
     }).then(() => { setNewHabit(""); fetchHabits(); });
   };
 
 const markDone = (id) => {
-  axios.post(`http://127.0.0.1:8000/habits/${id}/toggle`,
+  axios.post(`${API_URL}/habits/${id}/toggle`,
     { date: getLocalToday() },
     { headers: { token: localStorage.getItem("token") } }
   ).then(fetchHabits);
 };
 
   const deleteHabit = (id) => {
-    axios.delete(`http://127.0.0.1:8000/habits/${id}`, {
+    axios.delete(`${API_URL}/habits/${id}`, {
       headers: { token: localStorage.getItem("token") }
     }).then(fetchHabits);
   };
@@ -129,7 +131,7 @@ const markDone = (id) => {
 };
 
 const fetchJournal = (dateStr) => {
-  axios.get(`http://127.0.0.1:8000/journal/${dateStr}`, {
+  axios.get(`${API_URL}/journal/${dateStr}`, {
     headers: { token: localStorage.getItem("token") }
   }).then(res => {
     setJournalContent(res.data.content);
@@ -138,7 +140,7 @@ const fetchJournal = (dateStr) => {
 };
 
 const saveJournal = () => {
-  axios.post("http://127.0.0.1:8000/journal",
+  axios.post(`${API_URL}/journal`,
     { log_date: journalDate, content: journalContent },
     { headers: { token: localStorage.getItem("token") } }
   ).then(() => {
@@ -155,7 +157,7 @@ const selectJournalDate = (dateStr) => {
 const [habitLogs, setHabitLogs] = useState({});
 
 const fetchHabitLogs = (habitId) => {
-  axios.get(`http://127.0.0.1:8000/habits/${habitId}/logs`, {
+  axios.get(`${API_URL}/habits/${habitId}/logs`, {
     headers: { token: localStorage.getItem("token") }
   }).then(res => {
     const dates = new Set(res.data.map(log => log.date));
@@ -164,7 +166,7 @@ const fetchHabitLogs = (habitId) => {
 };
 
 const toggleDate = (habitId, dateStr) => {
-  axios.post(`http://127.0.0.1:8000/habits/${habitId}/toggle-date`,
+  axios.post(`${API_URL}/habits/${habitId}/toggle-date`,
     { date: dateStr },
     { headers: { token: localStorage.getItem("token") } }
   ).then(() => {
