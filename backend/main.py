@@ -125,14 +125,14 @@ def create_habit(habit: HabitCreate, user: models.User = Depends(get_current_use
     return new_habit
 
 @app.get("/habits/today")
-def get_today_status(user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_today_status(today: Optional[date] = None, user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
     habits = db.query(models.Habit).filter(models.Habit.user_id == user.id).all()
-    today = datetime.date.today()
+    target_date = today if today else date.today()
     done_ids = set()
     for habit in habits:
         log = db.query(models.HabitLog).filter(
             models.HabitLog.habit_id == habit.id,
-            models.HabitLog.date == today
+            models.HabitLog.date == target_date
         ).first()
         if log:
             done_ids.add(habit.id)
@@ -173,11 +173,17 @@ def delete_habit(habit_id: int, user: models.User = Depends(get_current_user), d
     return {"message": "Habit and logs deleted"}
 
 @app.get("/habits/{habit_id}/streak")
-def get_streak(habit_id: int, user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_streak(habit_id: int, today: Optional[date] = None, user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    habit = db.query(models.Habit).filter(
+        models.Habit.id == habit_id,
+        models.Habit.user_id == user.id
+    ).first()
+    if not habit:
+        raise HTTPException(status_code=404, detail="Habit not found")
     logs = db.query(models.HabitLog).filter(models.HabitLog.habit_id == habit_id).all()
     log_dates = set(log.date for log in logs)
     streak = 0
-    current_day = date.today()
+    current_day = today if today else date.today()
     while current_day in log_dates:
         streak += 1
         current_day -= timedelta(days=1)
