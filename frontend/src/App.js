@@ -175,7 +175,8 @@ const toggleDate = (habitId, dateStr) => {
   });
 };
 
-  useEffect(() => {
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+useEffect(() => {
   const token = localStorage.getItem("token");
   if (token) {
     setView("app");
