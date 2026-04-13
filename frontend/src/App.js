@@ -81,7 +81,7 @@ function App() {
   const fetchHabits = () => {
   const token = localStorage.getItem("token");
   const today = getLocalToday();
-  axios.get(`${API_URL}/habits`, {
+  axios.get(`${API_URL}/habits/today?today=${today}`, {
     headers: { token }
   }).then(res => {
     setHabits(res.data);
@@ -110,7 +110,7 @@ function App() {
 
 const markDone = (id) => {
   axios.post(`${API_URL}/habits/${id}/toggle`,
-    { date: getLocalToday() },
+    { log_date: getLocalToday() },
     { headers: { token: localStorage.getItem("token") } }
   ).then(fetchHabits);
 };
@@ -171,7 +171,7 @@ const fetchHabitLogs = (habitId) => {
 
 const toggleDate = (habitId, dateStr) => {
   axios.post(`${API_URL}/habits/${habitId}/toggle-date`,
-    { date: dateStr },
+    { log_date: dateStr },
     { headers: { token: localStorage.getItem("token") } }
   ).then(() => {
     fetchHabitLogs(habitId);
