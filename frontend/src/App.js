@@ -233,11 +233,11 @@ const toggleDate = (habitId, dateStr) => {
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
               <label style={labelStyle}>Email</label>
-              <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={inputStyle} />
+              <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} onKeystyle={inputStyle} />
             </div>
             <div>
               <label style={labelStyle}>Password</label>
-              <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
+              <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)}   onKeyDown={(e) => e.key === "Enter" && login()} style={inputStyle} />
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <button onClick={() => { setEmail(""); setPassword(""); setView("forgot"); }} style={{ background: "none", border: "none", fontSize: "13px", color: "#8B7355", cursor: "pointer", padding: "0", fontWeight: "500" }}>
@@ -276,7 +276,7 @@ const toggleDate = (habitId, dateStr) => {
             </div>
             <div>
               <label style={labelStyle}>Password</label>
-              <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} />
+              <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)}   onKeyDown={(e) => e.key === "Enter" && login()} style={inputStyle} />
             </div>
             <button onClick={register} style={buttonStyle}>Create Account</button>
           </div>
@@ -306,7 +306,7 @@ const toggleDate = (habitId, dateStr) => {
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
               <label style={labelStyle}>Email</label>
-              <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={inputStyle} />
+              <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)}  onKeyDown={(e) => e.key === "Enter" && login()} style={inputStyle} />
             </div>
             <button onClick={forgotPassword} style={buttonStyle}>Send Reset Link</button>
           </div>
