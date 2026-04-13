@@ -46,7 +46,7 @@ class ForgotPasswordRequest(BaseModel):
     email: str
 
 class ToggleDateRequest(BaseModel):
-    date: date
+    log_date: date
 
 class ToggleRequest(BaseModel):
     log_date: Optional[date] = None
@@ -92,17 +92,17 @@ def toggle_habit_date(habit_id: int, data: ToggleDateRequest, user: models.User 
     ).first()
     if not habit:
         raise HTTPException(status_code=404, detail="Habit not found")
-    if data.date > date.today():
+    if data.log_date > date.today():
         raise HTTPException(status_code=400, detail="Cannot mark future dates")
     existing = db.query(models.HabitLog).filter(
         models.HabitLog.habit_id == habit_id,
-        models.HabitLog.date == data.date
+        models.HabitLog.date == data.log_date
     ).first()
     if existing:
         db.delete(existing)
         db.commit()
         return {"message": "Log removed", "marked": False}
-    log = models.HabitLog(habit_id=habit_id, date=data.date)
+    log = models.HabitLog(habit_id=habit_id, date=data.log_date)
     db.add(log)
     db.commit()
     return {"message": "Log added", "marked": True}

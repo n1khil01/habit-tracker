@@ -34,7 +34,7 @@ function App() {
   Promise.all(
     toClear.map(dateStr =>
       axios.post(`${API_URL}/habits/${id}/toggle-date`,
-        { date: dateStr },
+        { log_date: dateStr },
         { headers: { token } }
       )
     )
