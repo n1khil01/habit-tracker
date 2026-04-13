@@ -81,7 +81,7 @@ function App() {
   const fetchHabits = () => {
   const token = localStorage.getItem("token");
   const today = getLocalToday();
-  axios.get(`${API_URL}/habits/today?today=${today}`, {
+  axios.get(`${API_URL}/habits/`, {
     headers: { token }
   }).then(res => {
     setHabits(res.data);
@@ -94,7 +94,7 @@ function App() {
       fetchHabitLogs(habit.id);
     });
   });
-  axios.get(`${API_URL}/habits/today`, {
+  axios.get(`${API_URL}/habits/today?today=${today}`, {
     headers: { token }
   }).then(res => {
     setDoneToday(new Set(res.data.done_today));
