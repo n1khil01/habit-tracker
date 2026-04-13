@@ -57,7 +57,7 @@ function App() {
 
   const register = async () => {
     try {
-      await axios.post('${API_URL}/register', { email, password });
+      await axios.post(`${API_URL}/register`, { email, password });
       alert("Account created! Please log in.");
       setView("login");
       setEmail("");
