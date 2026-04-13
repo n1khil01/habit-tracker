@@ -80,12 +80,13 @@ function App() {
 
   const fetchHabits = () => {
   const token = localStorage.getItem("token");
+  const today = getLocalToday();
   axios.get(`${API_URL}/habits`, {
     headers: { token }
   }).then(res => {
     setHabits(res.data);
     res.data.forEach(habit => {
-      axios.get(`${API_URL}/habits/${habit.id}/streak`, {
+      axios.get(`${API_URL}/habits/${habit.id}/streak?today=${today}`, {
         headers: { token }
       }).then(streakRes => {
         setStreaks(prev => ({ ...prev, [habit.id]: streakRes.data.streak }));
